@@ -3,7 +3,7 @@
     <div class="login-box">
       <div class="login-header">
         <h1>Inventaris Barang</h1>
-        <p>Login untuk melanjutkan</p>
+        <p>Dinas Komunikasi Informatika dan Persandian Hulu Sungai Utara</p>
       </div>
 
       <form @submit.prevent="handleLogin" class="login-form">
@@ -126,7 +126,7 @@ const handleLogin = async () => {
 .login-header h1 {
   color: #1d1d1f;
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0 0 6px 0;
   letter-spacing: -0.5px;
 }
