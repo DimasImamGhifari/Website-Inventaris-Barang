@@ -1,5 +1,16 @@
 <template>
   <div class="login-container">
+    <!-- Notifikasi Pop-up -->
+    <Transition name="notification">
+      <div v-if="showNotification" class="notification">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span>Login berhasil</span>
+      </div>
+    </Transition>
+
     <div class="login-box">
       <div class="login-header">
         <h1>Inventaris Barang</h1>
@@ -71,6 +82,7 @@ const form = ref({
 const loading = ref(false)
 const errorMessage = ref('')
 const showPassword = ref(false)
+const showNotification = ref(false)
 
 const handleLogin = async () => {
   loading.value = true
@@ -85,7 +97,14 @@ const handleLogin = async () => {
     if (response.data.success) {
       localStorage.setItem('token', response.data.token)
       localStorage.setItem('user', JSON.stringify(response.data.user))
-      router.push('/dashboard')
+
+      // Tampilkan notifikasi
+      showNotification.value = true
+
+      // Redirect setelah 1.5 detik
+      setTimeout(() => {
+        router.push('/dashboard')
+      }, 1500)
     }
   } catch (error) {
     if (error.response && error.response.data) {
@@ -107,6 +126,61 @@ const handleLogin = async () => {
   justify-content: center;
   background: #f5f5f7;
   padding: 20px;
+  position: relative;
+}
+
+/* Notifikasi */
+.notification {
+  position: fixed;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #1d1d1f;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 1000;
+}
+
+.notification svg {
+  color: #34c759;
+}
+
+/* Animasi notifikasi */
+.notification-enter-active {
+  animation: slideDown 0.4s ease-out;
+}
+
+.notification-leave-active {
+  animation: slideUp 0.3s ease-in;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
 }
 
 .login-box {
