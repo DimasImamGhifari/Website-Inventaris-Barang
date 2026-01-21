@@ -4,7 +4,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Http\Controllers\BarangController;
 
 Route::get('/test', function () {
     return response()->json([
@@ -15,7 +14,7 @@ Route::get('/test', function () {
 });
 
 Route::post('/login', function (Request $request) {
-    $request->validate([
+    $request->validate(rules: [
         'username' => 'required',
         'password' => 'required'
     ]);
@@ -46,11 +45,3 @@ Route::post('/login', function (Request $request) {
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
-
-// Barang Routes
-Route::get('/barang', [BarangController::class, 'index']);
-Route::post('/barang', [BarangController::class, 'store']);
-Route::get('/barang/{id}', [BarangController::class, 'show']);
-Route::put('/barang/{id}', [BarangController::class, 'update']);
-Route::delete('/barang/{id}', [BarangController::class, 'destroy']);
-Route::post('/barang/import', [BarangController::class, 'import']);
