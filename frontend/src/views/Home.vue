@@ -104,9 +104,7 @@ const fetchBarang = async () => {
   loading.value = true
   try {
     const response = await axios.get('http://localhost:8000/api/barang')
-    if (response.data.success) {
-      barangList.value = response.data.data
-    }
+    barangList.value = response.data.data || []
   } catch (error) {
     console.error('Error fetching data:', error)
   } finally {
