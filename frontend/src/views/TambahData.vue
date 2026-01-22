@@ -118,58 +118,97 @@
     <div class="card table-card">
       <div class="table-header">
         <h2>Data Aset</h2>
-        <button class="btn btn-secondary" @click="fetchData">
+        <div class="search-container">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="23 4 23 10 17 10"></polyline>
-            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
           </svg>
-          Refresh
-        </button>
+          <input
+            type="text"
+            v-model="searchQuery"
+            @input="handleSearch"
+            placeholder="Cari kode aset, kode barang, atau nama aset..."
+            class="search-input"
+          />
+        </div>
       </div>
 
       <div class="table-container">
-        <table v-if="assets.length > 0">
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Kode Aset</th>
-              <th>Kode Barang</th>
-              <th>Nama Aset</th>
-              <th>Jenis</th>
-              <th>Jumlah</th>
-              <th>Kondisi</th>
-              <th>Lokasi</th>
-              <th>Penanggung Jawab</th>
-              <th>Tahun</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(asset, index) in assets" :key="asset.id">
-              <td>{{ index + 1 }}</td>
-              <td>{{ asset.kode_aset }}</td>
-              <td>{{ asset.kode_barang }}</td>
-              <td>{{ asset.nama_aset }}</td>
-              <td>{{ asset.jenis_aset }}</td>
-              <td>{{ asset.jumlah }}</td>
-              <td>
-                <span class="badge" :class="getBadgeClass(asset.kondisi)">
-                  {{ asset.kondisi }}
-                </span>
-              </td>
-              <td>{{ asset.lokasi_penyimpanan }}</td>
-              <td>{{ asset.penanggung_jawab }}</td>
-              <td>{{ asset.tahun_perolehan }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <Transition name="fade" mode="out-in">
+          <table v-if="assets.length > 0" :key="tableKey">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Kode Aset</th>
+                <th>Kode Barang</th>
+                <th>Nama Aset</th>
+                <th>Jenis</th>
+                <th>Jumlah</th>
+                <th>Kondisi</th>
+                <th>Lokasi</th>
+                <th>Penanggung Jawab</th>
+                <th>Tahun</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(asset, index) in assets" :key="asset.id">
+                <td>{{ getRowNumber(index) }}</td>
+                <td>{{ asset.kode_aset }}</td>
+                <td>{{ asset.kode_barang }}</td>
+                <td>{{ asset.nama_aset }}</td>
+                <td>{{ asset.jenis_aset }}</td>
+                <td>{{ asset.jumlah }}</td>
+                <td>
+                  <span class="badge" :class="getBadgeClass(asset.kondisi)">
+                    {{ asset.kondisi }}
+                  </span>
+                </td>
+                <td>{{ asset.lokasi_penyimpanan }}</td>
+                <td>{{ asset.penanggung_jawab }}</td>
+                <td>{{ asset.tahun_perolehan }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </Transition>
 
-        <div v-else class="empty-table">
+        <div v-if="!loading && assets.length === 0" class="empty-table">
           <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
             <polyline points="13 2 13 9 20 9"></polyline>
           </svg>
           <p>Belum ada data aset</p>
         </div>
+
+        <div v-if="loading" class="loading-state">
+          <p>Memuat data...</p>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" v-if="pagination.last_page > 1">
+        <button
+          class="pagination-btn"
+          @click="goToPage(pagination.current_page - 1)"
+          :disabled="pagination.current_page === 1"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          Prev
+        </button>
+        <span class="pagination-info">
+          Page {{ pagination.current_page }} of {{ pagination.last_page }}
+        </span>
+        <button
+          class="pagination-btn"
+          @click="goToPage(pagination.current_page + 1)"
+          :disabled="pagination.current_page === pagination.last_page"
+        >
+          Next
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
       </div>
     </div>
 
@@ -205,7 +244,18 @@ const isDragging = ref(false)
 const uploading = ref(false)
 const uploadSuccess = ref(false)
 const submitting = ref(false)
+const loading = ref(false)
 const assets = ref([])
+const tableKey = ref(0)
+const searchQuery = ref('')
+const searchTimeout = ref(null)
+
+const pagination = ref({
+  current_page: 1,
+  last_page: 1,
+  per_page: 10,
+  total: 0
+})
 
 const form = ref({
   kode_aset: '',
@@ -348,13 +398,42 @@ const resetForm = () => {
   }
 }
 
-const fetchData = async () => {
+const fetchData = async (page = 1) => {
+  loading.value = true
   try {
-    const response = await axios.get(`${API_URL}/barang`)
-    assets.value = response.data.data
+    let url = `${API_URL}/barang?page=${page}&per_page=10`
+    if (searchQuery.value) {
+      url += `&search=${encodeURIComponent(searchQuery.value)}`
+    }
+    const response = await axios.get(url)
+    assets.value = response.data.data || []
+    if (response.data.pagination) {
+      pagination.value = response.data.pagination
+    }
   } catch (error) {
     console.error('Error fetching data:', error)
+  } finally {
+    loading.value = false
   }
+}
+
+const handleSearch = () => {
+  clearTimeout(searchTimeout.value)
+  searchTimeout.value = setTimeout(() => {
+    tableKey.value++
+    fetchData(1)
+  }, 300)
+}
+
+const goToPage = (page) => {
+  if (page >= 1 && page <= pagination.value.last_page) {
+    tableKey.value++
+    fetchData(page)
+  }
+}
+
+const getRowNumber = (index) => {
+  return (pagination.value.current_page - 1) * pagination.value.per_page + index + 1
 }
 
 const getBadgeClass = (kondisi) => {
@@ -573,6 +652,35 @@ onMounted(() => {
   margin: 0;
 }
 
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f5f5f7;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-width: 300px;
+}
+
+.search-container svg {
+  color: #86868b;
+  flex-shrink: 0;
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+  width: 100%;
+  color: #1d1d1f;
+}
+
+.search-input::placeholder {
+  color: #86868b;
+}
+
 .table-container {
   overflow-x: auto;
 }
@@ -649,6 +757,78 @@ tbody tr:hover {
 .empty-table p {
   margin: 0;
   font-size: 14px;
+}
+
+.loading-state {
+  display: flex;
+  justify-content: center;
+  padding: 48px;
+  color: #86868b;
+}
+
+.loading-state p {
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.pagination-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #f5f5f7;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1d1d1f;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #e5e5e5;
+}
+
+.pagination-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-btn svg {
+  flex-shrink: 0;
+}
+
+.pagination-info {
+  font-size: 14px;
+  color: #86868b;
+  font-weight: 500;
+}
+
+/* Table Fade Transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 /* Notification */
@@ -745,14 +925,27 @@ tbody tr:hover {
     text-align: center;
   }
 
-  .btn-secondary {
+  .search-container {
+    min-width: unset;
     width: 100%;
-    justify-content: center;
   }
 
   th, td {
     padding: 10px 12px;
     font-size: 12px;
+  }
+
+  .pagination {
+    gap: 12px;
+  }
+
+  .pagination-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .pagination-info {
+    font-size: 13px;
   }
 
   .notification {
@@ -805,6 +998,10 @@ tbody tr:hover {
     font-size: 16px; /* Prevent zoom on iOS */
   }
 
+  .search-input {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
   .btn {
     padding: 12px 20px;
   }
@@ -826,6 +1023,23 @@ tbody tr:hover {
   .empty-table svg {
     width: 36px;
     height: 36px;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pagination-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .pagination-info {
+    font-size: 12px;
+    width: 100%;
+    text-align: center;
+    order: -1;
   }
 
   .notification {
