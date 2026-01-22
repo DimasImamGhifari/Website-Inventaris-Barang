@@ -340,7 +340,7 @@ const uploadExcel = async () => {
 
     selectedFile.value = null
     fileInput.value.value = ''
-    fetchData()
+    fetchData(pagination.value.current_page)
   } catch (error) {
     showNotification(error.response?.data?.message || 'Gagal import data', 'error')
   } finally {
@@ -432,7 +432,7 @@ const submitForm = async () => {
     await axios.post(`${API_URL}/barang`, form.value)
     showNotification('Data berhasil disimpan')
     resetForm()
-    fetchData()
+    fetchData(pagination.value.current_page)
   } catch (error) {
     showNotification(error.response?.data?.message || 'Gagal menyimpan data', 'error')
   } finally {
