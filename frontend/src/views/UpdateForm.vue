@@ -151,6 +151,8 @@ const form = ref({
   keterangan: ''
 })
 
+const originalData = ref(null)
+
 const notification = ref({
   show: false,
   message: '',
@@ -181,7 +183,19 @@ const fetchAsset = async () => {
         lokasi_penyimpanan: asset.value.lokasi_penyimpanan,
         penanggung_jawab: asset.value.penanggung_jawab,
         tahun_perolehan: asset.value.tahun_perolehan,
-        keterangan: asset.value.keterangan || ''
+        keterangan: ''
+      }
+      // Simpan data asli untuk perbandingan
+      originalData.value = {
+        kode_aset: asset.value.kode_aset,
+        kode_barang: asset.value.kode_barang,
+        nama_aset: asset.value.nama_aset,
+        jenis_aset: asset.value.jenis_aset,
+        jumlah: asset.value.jumlah,
+        kondisi: asset.value.kondisi,
+        lokasi_penyimpanan: asset.value.lokasi_penyimpanan,
+        penanggung_jawab: asset.value.penanggung_jawab,
+        tahun_perolehan: asset.value.tahun_perolehan
       }
     }
   } catch (error) {
@@ -192,7 +206,28 @@ const fetchAsset = async () => {
   }
 }
 
+const hasChanges = () => {
+  if (!originalData.value) return false
+  return (
+    form.value.kode_aset !== originalData.value.kode_aset ||
+    form.value.kode_barang !== originalData.value.kode_barang ||
+    form.value.nama_aset !== originalData.value.nama_aset ||
+    form.value.jenis_aset !== originalData.value.jenis_aset ||
+    Number(form.value.jumlah) !== Number(originalData.value.jumlah) ||
+    form.value.kondisi !== originalData.value.kondisi ||
+    form.value.lokasi_penyimpanan !== originalData.value.lokasi_penyimpanan ||
+    form.value.penanggung_jawab !== originalData.value.penanggung_jawab ||
+    Number(form.value.tahun_perolehan) !== Number(originalData.value.tahun_perolehan)
+  )
+}
+
 const submitForm = async () => {
+  // Cek apakah ada perubahan
+  if (!hasChanges()) {
+    showNotification('Tidak ada perubahan data', 'error')
+    return
+  }
+
   submitting.value = true
   try {
     const id = route.params.id
