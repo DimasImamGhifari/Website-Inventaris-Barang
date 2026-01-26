@@ -135,7 +135,7 @@ php artisan test --filter=BarangTest
 
 ### Test Cases
 
-Total 30 White Box Test Cases:
+**White Box Testing (30 tests):**
 - CREATE Positive: 5 tests
 - CREATE Negative: 5 tests
 - READ Positive: 5 tests
@@ -143,7 +143,43 @@ Total 30 White Box Test Cases:
 - UPDATE Negative: 5 tests
 - DELETE Positive: 5 tests
 
+**Black Box Testing - Boundary Value Analysis (10 tests):**
+- Jumlah: minimum valid, below minimum, negatif
+- Tahun perolehan: minimum valid, below minimum, maximum valid, above maximum
+- Kode aset: empty string
+- Nama aset: panjang minimum, panjang maksimum
+
 Lihat file `TEST_CASES.md` untuk dokumentasi lengkap test cases.
+
+### Code Coverage dengan Xdebug
+
+**Prasyarat:** Pastikan Xdebug sudah terinstall dan dikonfigurasi.
+
+1. Cek apakah Xdebug aktif:
+```bash
+php -v
+```
+Harus muncul "with Xdebug" di output.
+
+2. Konfigurasi Xdebug di `php.ini`:
+```ini
+[xdebug]
+zend_extension=xdebug
+xdebug.mode=coverage
+```
+
+3. Jalankan test dengan code coverage:
+```bash
+cd backend
+php artisan test --coverage
+```
+
+4. Generate HTML report:
+```bash
+XDEBUG_MODE=coverage php artisan test --coverage-html tests/coverage-html
+```
+
+5. Buka `tests/coverage-html/index.html` di browser untuk melihat report.
 
 ## Format Excel untuk Import
 
