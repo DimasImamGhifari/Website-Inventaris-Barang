@@ -101,15 +101,16 @@ const handleLogout = () => {
 
 <style scoped>
 .dashboard {
-  min-height: 100vh;
+  height: 100vh;
   background: #f5f5f7;
   display: flex;
+  overflow: hidden;
 }
 
 /* Sidebar */
 .sidebar {
   width: 0;
-  min-height: 100vh;
+  height: 100vh;
   background: #ffffff;
   border-right: 1px solid #e5e5e5;
   overflow: hidden;
@@ -119,6 +120,30 @@ const handleLogout = () => {
 
 .dashboard.sidebar-open .sidebar {
   width: 240px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+.sidebar::-webkit-scrollbar,
+.main-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track,
+.main-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb,
+.main-content::-webkit-scrollbar-thumb {
+  background: #d1d1d6;
+  border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover,
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a6;
 }
 
 .sidebar-nav {
@@ -164,6 +189,9 @@ const handleLogout = () => {
   flex: 1;
   padding: 24px;
   transition: all 0.3s ease;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .dashboard-header {
@@ -334,6 +362,8 @@ const handleLogout = () => {
     transform: translateX(-100%);
     transition: transform 0.3s ease;
     width: 260px !important;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
   .dashboard.sidebar-open .sidebar {
@@ -344,6 +374,8 @@ const handleLogout = () => {
   .main-content {
     padding: 16px;
     width: 100%;
+    height: 100vh;
+    overflow-y: auto;
   }
 
   .dashboard-header {
