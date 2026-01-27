@@ -95,8 +95,8 @@ const handleLogin = async () => {
     })
 
     if (response.data.success) {
-      localStorage.setItem('token', response.data.token)
-      localStorage.setItem('user', JSON.stringify(response.data.user))
+      sessionStorage.setItem('token', response.data.token)
+      sessionStorage.setItem('user', JSON.stringify(response.data.user))
 
       // Tampilkan notifikasi
       showNotification.value = true

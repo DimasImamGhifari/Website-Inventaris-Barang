@@ -92,8 +92,8 @@ const closeSidebar = () => {
 const handleLogout = () => {
   loggingOut.value = true
   setTimeout(() => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
+    sessionStorage.removeItem('token')
+    sessionStorage.removeItem('user')
     router.push('/login')
   }, 400)
 }
