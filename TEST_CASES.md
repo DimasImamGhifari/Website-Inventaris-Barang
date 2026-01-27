@@ -131,7 +131,7 @@
 
 ## D. CATATAN PENGUJIAN
 
-**Status Legend:**
+**Status:**
 - ✅ Pass
 - ❌ Fail
 - ⏳ Pending
