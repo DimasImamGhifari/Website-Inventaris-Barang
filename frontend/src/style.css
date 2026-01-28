@@ -1,3 +1,29 @@
+:root {
+  --bg-primary: #f5f5f7;
+  --bg-card: #ffffff;
+  --bg-input: #f5f5f7;
+  --bg-hover: #f5f5f7;
+  --bg-thead: #f5f5f7;
+  --text-primary: #1d1d1f;
+  --text-secondary: #86868b;
+  --border-color: #e5e5e5;
+  --border-light: #f0f0f0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] {
+  --bg-primary: #1c1c1e;
+  --bg-card: #2c2c2e;
+  --bg-input: #3a3a3c;
+  --bg-hover: #3a3a3c;
+  --bg-thead: #3a3a3c;
+  --text-primary: #f5f5f7;
+  --text-secondary: #a1a1a6;
+  --border-color: #3a3a3c;
+  --border-light: #3a3a3c;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -7,7 +33,8 @@
 html, body {
   width: 100%;
   height: 100%;
-  background-color: #f5f5f7;
+  background-color: var(--bg-primary);
+  transition: background-color 0.3s ease;
 }
 
 body {
@@ -15,9 +42,193 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  color: var(--text-primary);
 }
 
 #app {
   width: 100%;
   min-height: 100vh;
+}
+
+/* ===== Dark Mode Global Overrides ===== */
+[data-theme="dark"] .data-section,
+[data-theme="dark"] .card,
+[data-theme="dark"] .upload-section,
+[data-theme="dark"] .form-section {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .section-header h3,
+[data-theme="dark"] .page-header h1,
+[data-theme="dark"] .table-header h2,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] table thead,
+[data-theme="dark"] thead {
+  background: var(--bg-thead) !important;
+}
+
+[data-theme="dark"] th {
+  color: var(--text-primary) !important;
+  border-bottom-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] td {
+  color: var(--text-primary) !important;
+  border-bottom-color: var(--border-light) !important;
+}
+
+[data-theme="dark"] tbody tr:hover {
+  background: var(--bg-hover) !important;
+}
+
+[data-theme="dark"] .search-container {
+  background: var(--bg-input) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .search-input {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .search-container svg {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .pagination-btn {
+  background: var(--bg-input) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .pagination-btn:hover:not(:disabled) {
+  background: var(--bg-hover) !important;
+}
+
+[data-theme="dark"] .pagination-info {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .pagination {
+  border-top-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .empty-state,
+[data-theme="dark"] .loading-state {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .btn-label {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .btn-label:hover {
+  background: var(--bg-hover) !important;
+}
+
+[data-theme="dark"] .modal-overlay {
+  background: rgba(0, 0, 0, 0.7) !important;
+}
+
+[data-theme="dark"] .modal-content {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .modal-content h3 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .modal-message {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .modal-detail {
+  background: var(--bg-input) !important;
+}
+
+[data-theme="dark"] .detail-label {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .detail-value {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .btn-secondary {
+  background: var(--bg-input) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .btn-secondary:hover:not(:disabled) {
+  background: var(--bg-hover) !important;
+}
+
+[data-theme="dark"] .notification {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .row-selected {
+  background: rgba(0, 113, 227, 0.1) !important;
+}
+
+[data-theme="dark"] .row-selected:hover {
+  background: rgba(0, 113, 227, 0.15) !important;
+}
+
+[data-theme="dark"] .checkbox {
+  accent-color: #0071e3 !important;
+}
+
+/* Dark mode form elements */
+[data-theme="dark"] .form-group label {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group select,
+[data-theme="dark"] .form-group textarea,
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] select {
+  background: var(--bg-input) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .form-group input::placeholder,
+[data-theme="dark"] input::placeholder {
+  color: var(--text-secondary) !important;
+}
+
+/* Dark mode upload area */
+[data-theme="dark"] .upload-area,
+[data-theme="dark"] .drop-zone {
+  background: var(--bg-input) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-secondary) !important;
+}
+
+/* Dark mode for riwayat/history badges keep their own colors */
+
+/* Dark mode scrollbar */
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #636366;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: #8e8e93;
 }

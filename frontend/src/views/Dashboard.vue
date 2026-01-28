@@ -46,6 +46,29 @@
           <span>Riwayat</span>
         </router-link>
       </nav>
+      <div class="sidebar-footer">
+        <div class="dark-mode-toggle" @click="toggleDarkMode">
+          <div class="toggle-track" :class="{ active: isDarkMode }">
+            <div class="toggle-thumb">
+              <svg v-if="!isDarkMode" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+              <svg v-else xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+            </div>
+          </div>
+          <span class="toggle-label">{{ isDarkMode ? 'Dark Mode' : 'Light Mode' }}</span>
+        </div>
+      </div>
     </aside>
 
     <!-- Main Content -->
@@ -72,12 +95,27 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const sidebarOpen = ref(false)
 const loggingOut = ref(false)
+const isDarkMode = ref(false)
+
+const toggleDarkMode = () => {
+  isDarkMode.value = !isDarkMode.value
+  document.documentElement.setAttribute('data-theme', isDarkMode.value ? 'dark' : 'light')
+  localStorage.setItem('darkMode', isDarkMode.value ? 'true' : 'false')
+}
+
+onMounted(() => {
+  const saved = localStorage.getItem('darkMode')
+  if (saved === 'true') {
+    isDarkMode.value = true
+    document.documentElement.setAttribute('data-theme', 'dark')
+  }
+})
 
 const toggleSidebar = () => {
   sidebarOpen.value = !sidebarOpen.value
@@ -102,17 +140,18 @@ const handleLogout = () => {
 <style scoped>
 .dashboard {
   height: 100vh;
-  background: #f5f5f7;
+  background: var(--bg-primary);
   display: flex;
   overflow: hidden;
+  transition: background 0.3s ease;
 }
 
 /* Sidebar */
 .sidebar {
   width: 0;
   height: 100vh;
-  background: #ffffff;
-  border-right: 1px solid #e5e5e5;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border-color);
   overflow: hidden;
   transition: width 0.3s ease;
   flex-shrink: 0;
@@ -137,13 +176,18 @@ const handleLogout = () => {
 
 .sidebar::-webkit-scrollbar-thumb,
 .main-content::-webkit-scrollbar-thumb {
-  background: #d1d1d6;
+  background: var(--text-secondary);
   border-radius: 3px;
 }
 
 .sidebar::-webkit-scrollbar-thumb:hover,
 .main-content::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a6;
+  background: var(--text-primary);
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-nav {
@@ -151,6 +195,68 @@ const handleLogout = () => {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  flex: 1;
+}
+
+.sidebar-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-color);
+}
+
+.dark-mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 8px 0;
+  white-space: nowrap;
+}
+
+.toggle-track {
+  width: 44px;
+  height: 24px;
+  background: #e5e5e5;
+  border-radius: 12px;
+  position: relative;
+  transition: background 0.3s ease;
+  flex-shrink: 0;
+}
+
+.toggle-track.active {
+  background: #0071e3;
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-track.active .toggle-thumb {
+  transform: translateX(20px);
+}
+
+.toggle-thumb svg {
+  color: #86868b;
+}
+
+.toggle-track.active .toggle-thumb svg {
+  color: #0071e3;
+}
+
+.toggle-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #86868b;
 }
 
 .nav-item {
@@ -158,7 +264,7 @@ const handleLogout = () => {
   align-items: center;
   gap: 12px;
   padding: 12px 24px;
-  color: #1d1d1f;
+  color: var(--text-primary);
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -167,11 +273,11 @@ const handleLogout = () => {
 }
 
 .nav-item:hover {
-  background: #f5f5f7;
+  background: var(--bg-hover);
 }
 
 .nav-item.active {
-  background: #f5f5f7;
+  background: var(--bg-hover);
   color: #0071e3;
 }
 
@@ -181,7 +287,7 @@ const handleLogout = () => {
 
 .nav-item svg {
   flex-shrink: 0;
-  color: #86868b;
+  color: var(--text-secondary);
 }
 
 /* Main Content */
@@ -199,10 +305,11 @@ const handleLogout = () => {
   justify-content: space-between;
   align-items: center;
   padding: 20px 28px;
-  background: #ffffff;
+  background: var(--bg-card);
   border-radius: 12px;
-  border: 1px solid #e5e5e5;
+  border: 1px solid var(--border-color);
   margin-bottom: 24px;
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .header-left {
@@ -219,15 +326,15 @@ const handleLogout = () => {
   gap: 5px;
   width: 36px;
   height: 36px;
-  background: #f5f5f7;
-  border: 1px solid #e5e5e5;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .hamburger-button:hover {
-  background: #e5e5e5;
+  background: var(--bg-hover);
 }
 
 .hamburger-button:active {
@@ -240,7 +347,7 @@ const handleLogout = () => {
   height: 2px;
   min-height: 2px;
   max-height: 2px;
-  background: #1d1d1f;
+  background: var(--text-primary);
   border-radius: 1px;
   flex-shrink: 0;
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
@@ -279,7 +386,7 @@ const handleLogout = () => {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
   letter-spacing: -0.3px;
 }
 
