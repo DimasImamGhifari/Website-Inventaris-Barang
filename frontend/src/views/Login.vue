@@ -68,11 +68,20 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '../api'
 
 const router = useRouter()
+
+onMounted(() => {
+  const saved = localStorage.getItem('darkMode')
+  if (saved === 'true') {
+    document.documentElement.setAttribute('data-theme', 'dark')
+  } else {
+    document.documentElement.removeAttribute('data-theme')
+  }
+})
 
 const form = ref({
   username: '',
@@ -124,9 +133,10 @@ const handleLogin = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f5f7;
+  background: var(--bg-primary);
   padding: 20px;
   position: relative;
+  transition: background 0.3s ease;
 }
 
 /* Notifikasi */
@@ -135,17 +145,18 @@ const handleLogin = async () => {
   top: 32px;
   left: 50%;
   transform: translateX(-50%);
-  background: #ffffff;
-  border: 1px solid #e5e5e5;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 14px 24px;
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #1d1d1f;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 500;
   z-index: 1000;
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .notification svg {
@@ -184,13 +195,13 @@ const handleLogin = async () => {
 }
 
 .login-box {
-  background: #ffffff;
+  background: var(--bg-card);
   border-radius: 12px;
   width: 100%;
   max-width: 360px;
   padding: 40px 36px;
-  border: 1px solid #e5e5e5;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid var(--border-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
 }
 
 .login-box:hover {
@@ -204,7 +215,7 @@ const handleLogin = async () => {
 }
 
 .login-header h1 {
-  color: #1d1d1f;
+  color: var(--text-primary);
   font-size: 24px;
   font-weight: 700;
   margin: 0 0 6px 0;
@@ -212,7 +223,7 @@ const handleLogin = async () => {
 }
 
 .login-header p {
-  color: #86868b;
+  color: var(--text-secondary);
   font-size: 14px;
   margin: 0;
   font-weight: 400;
@@ -246,7 +257,7 @@ const handleLogin = async () => {
   border: none;
   padding: 4px;
   cursor: pointer;
-  color: #86868b;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -254,15 +265,15 @@ const handleLogin = async () => {
 }
 
 .toggle-password:hover {
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .form-group input {
-  background: #f5f5f7;
-  border: 1px solid #d2d2d7;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 12px 14px;
-  color: #1d1d1f;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 400;
   transition: all 0.2s ease;
@@ -271,16 +282,16 @@ const handleLogin = async () => {
 }
 
 .form-group input::placeholder {
-  color: #86868b;
+  color: var(--text-secondary);
 }
 
 .form-group input:hover {
-  border-color: #a1a1a6;
+  border-color: var(--text-secondary);
 }
 
 .form-group input:focus {
   border-color: #0071e3;
-  background: #ffffff;
+  background: var(--bg-card);
 }
 
 .error-message {
