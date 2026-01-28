@@ -200,6 +200,7 @@ const fetchAsset = async () => {
     }
   } catch (error) {
     console.error('Error fetching asset:', error)
+    showNotification('Gagal memuat data aset. Periksa koneksi ke server.', 'error')
     asset.value = null
   } finally {
     loading.value = false

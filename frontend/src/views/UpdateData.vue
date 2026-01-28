@@ -111,6 +111,22 @@
         </button>
       </div>
     </div>
+
+    <!-- Notification -->
+    <Transition name="notification">
+      <div v-if="notification.show" class="notification" :class="notification.type">
+        <svg v-if="notification.type === 'success'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <svg v-else xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="15" y1="9" x2="9" y2="15"></line>
+          <line x1="9" y1="9" x2="15" y2="15"></line>
+        </svg>
+        <span>{{ notification.message }}</span>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -128,6 +144,19 @@ const loading = ref(false)
 const tableKey = ref(0)
 const searchQuery = ref('')
 const searchTimeout = ref(null)
+
+const notification = ref({
+  show: false,
+  message: '',
+  type: 'success'
+})
+
+const showNotification = (message, type = 'success') => {
+  notification.value = { show: true, message, type }
+  setTimeout(() => {
+    notification.value.show = false
+  }, 3000)
+}
 
 const pagination = ref({
   current_page: 1,
@@ -150,6 +179,7 @@ const fetchData = async (page = 1) => {
     }
   } catch (error) {
     console.error('Error fetching data:', error)
+    showNotification('Gagal memuat data. Periksa koneksi ke server.', 'error')
   } finally {
     loading.value = false
   }
@@ -573,5 +603,40 @@ tbody tr:hover {
     width: 36px;
     height: 36px;
   }
+}
+
+/* Notification */
+.notification {
+  position: fixed;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 1001;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.notification.success { color: #34c759; }
+.notification.error { color: #ff3b30; }
+
+.notification-enter-active { animation: slideDown 0.3s ease; }
+.notification-leave-active { animation: slideUp 0.3s ease; }
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 1; transform: translateX(-50%) translateY(0); }
+  to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
 }
 </style>

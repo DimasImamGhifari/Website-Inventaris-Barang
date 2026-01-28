@@ -68,20 +68,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '../api'
 
 const router = useRouter()
-
-onMounted(() => {
-  const saved = localStorage.getItem('darkMode')
-  if (saved === 'true') {
-    document.documentElement.setAttribute('data-theme', 'dark')
-  } else {
-    document.documentElement.removeAttribute('data-theme')
-  }
-})
 
 const form = ref({
   username: '',

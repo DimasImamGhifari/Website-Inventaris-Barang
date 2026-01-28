@@ -10,6 +10,13 @@
     <title>Website Inventaris Barang</title>
   </head>
   <body>
+    <script>
+      (function() {
+        if (localStorage.getItem('darkMode') === 'true') {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>

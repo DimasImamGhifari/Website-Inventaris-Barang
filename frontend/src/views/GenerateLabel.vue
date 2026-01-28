@@ -251,6 +251,7 @@ const fetchData = async (page = 1) => {
     }
   } catch (error) {
     console.error('Error fetching data:', error)
+    showNotification('Gagal memuat data. Periksa koneksi ke server.', 'error')
   } finally {
     loading.value = false
   }
