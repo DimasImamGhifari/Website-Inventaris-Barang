@@ -18,6 +18,7 @@ Aplikasi pengelolaan data inventaris barang untuk Dinas Komunikasi Informatika d
 - Pagination
 - Generate label barang (PNG) dengan kode barang & tahun pengadaan
 - Riwayat aktivitas
+- Dark mode / Light mode (tersimpan di localStorage)
 - Responsive design (desktop, tablet, mobile)
 
 ## Instalasi
