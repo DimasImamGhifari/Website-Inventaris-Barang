@@ -7,6 +7,7 @@ import UpdateData from '../views/UpdateData.vue'
 import UpdateForm from '../views/UpdateForm.vue'
 import HapusData from '../views/HapusData.vue'
 import Riwayat from '../views/Riwayat.vue'
+import GenerateLabel from '../views/GenerateLabel.vue'
 
 const routes = [
   {
@@ -52,6 +53,11 @@ const routes = [
         path: 'riwayat',
         name: 'Riwayat',
         component: Riwayat
+      },
+      {
+        path: 'generate-label',
+        name: 'GenerateLabel',
+        component: GenerateLabel
       }
     ]
   }

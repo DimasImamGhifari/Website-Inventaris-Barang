@@ -24,6 +24,14 @@
             </svg>
             Download Excel
           </button>
+          <button class="btn-label" @click="$router.push('/dashboard/generate-label')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 6 2 18 2 18 9"></polyline>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+              <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            Generate Label Barang
+          </button>
         </div>
       </div>
 
@@ -298,6 +306,34 @@ onMounted(() => {
   flex-shrink: 0;
 }
 
+.btn-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #ffffff;
+  color: #1d1d1f;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-label:hover {
+  background: #f5f5f7;
+}
+
+.btn-label:active {
+  transform: scale(0.98);
+}
+
+.btn-label svg {
+  flex-shrink: 0;
+}
+
 .search-container {
   display: flex;
   align-items: center;
@@ -508,7 +544,8 @@ tbody tr:hover {
     width: 100%;
   }
 
-  .btn-download {
+  .btn-download,
+  .btn-label {
     width: 100%;
     justify-content: center;
   }

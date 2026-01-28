@@ -16,6 +16,8 @@ Aplikasi pengelolaan data inventaris barang untuk Dinas Komunikasi Informatika d
 - Export data ke Excel
 - Pencarian real-time
 - Pagination
+- Generate label barang (PNG) dengan kode barang & tahun pengadaan
+- Riwayat aktivitas
 - Responsive design (desktop, tablet, mobile)
 
 ## Instalasi
