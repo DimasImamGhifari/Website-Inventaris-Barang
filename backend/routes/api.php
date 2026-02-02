@@ -16,7 +16,7 @@ Route::get('/test', function () {
 });
 
 Route::post('/login', function (Request $request) {
-    $request->validate(rules: [
+    $request->validate([
         'username' => 'required',
         'password' => 'required'
     ]);
@@ -30,7 +30,11 @@ Route::post('/login', function (Request $request) {
         ], 401);
     }
 
-    $token = bin2hex(random_bytes(32));
+    // Hapus token lama (optional - untuk single session)
+    $user->tokens()->delete();
+
+    // Buat token baru menggunakan Sanctum
+    $token = $user->createToken('auth-token')->plainTextToken;
 
     return response()->json([
         'success' => true,
@@ -44,17 +48,32 @@ Route::post('/login', function (Request $request) {
     ]);
 });
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
+Route::post('/logout', function (Request $request) {
+    $request->user()->currentAccessToken()->delete();
+    return response()->json([
+        'success' => true,
+        'message' => 'Logout berhasil'
+    ]);
 })->middleware('auth:sanctum');
 
-// Barang Routes
-Route::get('/barang', [BarangController::class, 'index']);
-Route::post('/barang', [BarangController::class, 'store']);
-Route::get('/barang/{id}', [BarangController::class, 'show']);
-Route::put('/barang/{id}', [BarangController::class, 'update']);
-Route::delete('/barang/{id}', [BarangController::class, 'destroy']);
-Route::post('/barang/import', [BarangController::class, 'import']);
+Route::get('/user', function (Request $request) {
+    return response()->json([
+        'success' => true,
+        'user' => $request->user()
+    ]);
+})->middleware('auth:sanctum');
 
-// Riwayat Routes
-Route::get('/riwayat', [RiwayatController::class, 'index']);
+// Protected Routes - Memerlukan autentikasi
+Route::middleware('auth:sanctum')->group(function () {
+    // Barang Routes
+    Route::get('/barang', [BarangController::class, 'index']);
+    Route::post('/barang', [BarangController::class, 'store']);
+    Route::get('/barang/{id}', [BarangController::class, 'show']);
+    Route::put('/barang/{id}', [BarangController::class, 'update']);
+    Route::delete('/barang/{id}', [BarangController::class, 'destroy']);
+    Route::post('/barang/import', [BarangController::class, 'import']);
+    Route::post('/barang/bulk-delete', [BarangController::class, 'bulkDestroy']);
+
+    // Riwayat Routes
+    Route::get('/riwayat', [RiwayatController::class, 'index']);
+});

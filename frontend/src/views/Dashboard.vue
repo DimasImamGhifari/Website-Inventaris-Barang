@@ -118,6 +118,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { logout } from '../api'
 
 const router = useRouter()
 const sidebarOpen = ref(false)
@@ -154,12 +155,11 @@ const handleLogout = () => {
   showLogoutConfirm.value = true
 }
 
-const confirmLogout = () => {
+const confirmLogout = async () => {
   showLogoutConfirm.value = false
   loggingOut.value = true
+  await logout()
   setTimeout(() => {
-    sessionStorage.removeItem('token')
-    sessionStorage.removeItem('user')
     router.push('/login')
   }, 400)
 }

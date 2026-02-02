@@ -359,10 +359,10 @@ const bulkDeleteAssets = async () => {
 
   deleting.value = true
   try {
-    await Promise.all(
-      selectedIds.value.map(id => api.delete(`/barang/${id}`))
-    )
-    showNotification(`${selectedIds.value.length} data berhasil dihapus`)
+    const response = await api.post('/barang/bulk-delete', {
+      ids: selectedIds.value
+    })
+    showNotification(response.data.message || `${selectedIds.value.length} data berhasil dihapus`)
     selectedIds.value = []
     closeModal()
     fetchData(pagination.value.current_page)

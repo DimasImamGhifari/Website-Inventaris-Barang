@@ -257,4 +257,47 @@ class BarangController extends Controller
             'duplicates' => $duplicates
         ]);
     }
+
+    public function bulkDestroy(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'required|integer|exists:barang,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $ids = $request->ids;
+        $deletedCount = 0;
+
+        foreach ($ids as $id) {
+            $barang = Barang::find($id);
+            if ($barang) {
+                // Log riwayat hapus data
+                Riwayat::create([
+                    'kode_barang' => $barang->kode_barang,
+                    'nama_aset' => $barang->nama_aset,
+                    'perubahan' => 'Hapus Data (Bulk)',
+                    'stok_sebelum' => $barang->jumlah,
+                    'stok_sesudah' => 0,
+                    'keterangan' => 'Hapus massal',
+                ]);
+
+                $barang->delete();
+                $deletedCount++;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Berhasil menghapus $deletedCount data",
+            'count' => $deletedCount
+        ]);
+    }
 }
