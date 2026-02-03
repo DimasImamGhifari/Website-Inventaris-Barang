@@ -86,8 +86,8 @@
                 <th>Kode Barang</th>
                 <th>Nama Aset</th>
                 <th>Jenis Aset</th>
-                <th>Jumlah</th>
-                <th>Kondisi</th>
+                <th class="center-col">Jumlah</th>
+                <th class="kondisi-col">Kondisi</th>
                 <th>Lokasi</th>
                 <th>Penanggung Jawab</th>
                 <th>Tahun</th>
@@ -100,7 +100,7 @@
                 <td>{{ item.kode_barang }}</td>
                 <td>{{ item.nama_aset }}</td>
                 <td>{{ item.jenis_aset }}</td>
-                <td>{{ item.jumlah }}</td>
+                <td class="center-col">{{ item.jumlah }}</td>
                 <td class="kondisi-col">
                   <span :class="['kondisi-badge', kondisiClass(item.kondisi)]">
                     {{ item.kondisi }}
@@ -688,6 +688,7 @@ tbody tr:hover {
   white-space: nowrap;
 }
 
+.center-col,
 .kondisi-col {
   text-align: center;
 }

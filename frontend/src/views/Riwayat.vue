@@ -67,8 +67,8 @@
                 <th>Kode Barang</th>
                 <th>Nama Aset</th>
                 <th>Perubahan</th>
-                <th>Stok Sebelum</th>
-                <th>Stok Sesudah</th>
+                <th class="stok-col">Stok Sebelum</th>
+                <th class="stok-col">Stok Sesudah</th>
                 <th>Keterangan</th>
               </tr>
             </thead>
