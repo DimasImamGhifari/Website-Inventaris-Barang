@@ -1,6 +1,12 @@
 <template>
   <div class="page-container">
     <div class="page-header">
+      <button class="btn-back" @click="goBack">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Kembali
+      </button>
       <h1>Generate Label Barang</h1>
     </div>
 
@@ -198,7 +204,10 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import api from '../api'
+
+const router = useRouter()
 
 const assets = ref([])
 const loading = ref(false)
@@ -392,6 +401,12 @@ const executeGenerate = async () => {
   }
 }
 
+const goBack = () => {
+  router.go(-1) // Go back to previous page
+  // If router.go(-1) doesn't work as expected, we can navigate directly to home
+  // router.push('/dashboard')
+}
+
 onMounted(() => {
   fetchData()
 })
@@ -403,6 +418,9 @@ onMounted(() => {
 }
 
 .page-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
   margin-bottom: 24px;
 }
 
@@ -411,6 +429,29 @@ onMounted(() => {
   font-size: 24px;
   font-weight: 600;
   color: var(--text-primary);
+}
+
+.btn-back {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+  background: var(--border-color);
+}
+
+.btn-back:active {
+  transform: scale(0.98);
 }
 
 .card {
