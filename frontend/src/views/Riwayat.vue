@@ -7,18 +7,53 @@
     <div class="card">
       <div class="table-header">
         <h2>Log Aktivitas</h2>
-        <div class="search-container">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.35-4.35"></path>
-          </svg>
-          <input
-            type="text"
-            v-model="searchQuery"
-            @input="handleSearch"
-            placeholder="Cari kode barang, nama aset, atau perubahan..."
-            class="search-input"
-          />
+        <div class="header-right">
+          <div class="pagination-controls">
+            <label>Tampilkan:</label>
+            <div class="custom-select" :class="{ 'is-open': isDropdownOpen }">
+              <button 
+                type="button" 
+                class="select-trigger" 
+                @click="toggleDropdown"
+                @blur="closeDropdownDelayed"
+              >
+                <span class="select-value">{{ selectedPerPage }}</span>
+                <svg class="select-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+              <Transition name="dropdown">
+                <div v-if="isDropdownOpen" class="select-dropdown">
+                  <button
+                    v-for="option in perPageOptions"
+                    :key="option"
+                    type="button"
+                    class="select-option"
+                    :class="{ 'is-selected': selectedPerPage === option }"
+                    @mousedown.prevent="selectOption(option)"
+                  >
+                    <span>{{ option }}</span>
+                    <svg v-if="selectedPerPage === option" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </button>
+                </div>
+              </Transition>
+            </div>
+          </div>
+          <div class="search-container">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input
+              type="text"
+              v-model="searchQuery"
+              @input="handleSearch"
+              placeholder="Cari kode barang, nama aset, atau perubahan..."
+              class="search-input"
+            />
+          </div>
         </div>
       </div>
 
@@ -142,6 +177,30 @@ const showNotification = (message, type = 'success') => {
   }, 3000)
 }
 
+const perPageOptions = [10, 25, 50, 100]
+const selectedPerPage = ref(10)
+const isDropdownOpen = ref(false)
+const dropdownTimeout = ref(null)
+
+const toggleDropdown = () => {
+  isDropdownOpen.value = !isDropdownOpen.value
+}
+
+const closeDropdownDelayed = () => {
+  dropdownTimeout.value = setTimeout(() => {
+    isDropdownOpen.value = false
+  }, 150)
+}
+
+const selectOption = (option) => {
+  clearTimeout(dropdownTimeout.value)
+  if (selectedPerPage.value !== option) {
+    selectedPerPage.value = option
+    handlePerPageChange()
+  }
+  isDropdownOpen.value = false
+}
+
 const pagination = ref({
   current_page: 1,
   last_page: 1,
@@ -152,7 +211,7 @@ const pagination = ref({
 const fetchData = async (page = 1) => {
   loading.value = true
   try {
-    let url = `/riwayat?page=${page}&per_page=10`
+    let url = `/riwayat?page=${page}&per_page=${selectedPerPage.value}`
     if (searchQuery.value) {
       url += `&search=${encodeURIComponent(searchQuery.value)}`
     }
@@ -167,6 +226,23 @@ const fetchData = async (page = 1) => {
   } finally {
     loading.value = false
   }
+}
+
+const handlePerPageChange = () => {
+  // Calculate the first item index of current page
+  const oldPerPage = pagination.value.per_page
+  const currentPage = pagination.value.current_page
+  const firstItemIndex = (currentPage - 1) * oldPerPage
+  
+  // Calculate new page based on position
+  const newPage = Math.floor(firstItemIndex / selectedPerPage.value) + 1
+  
+  // Make sure new page doesn't exceed the new last page
+  const newLastPage = Math.ceil(pagination.value.total / selectedPerPage.value)
+  const targetPage = Math.min(newPage, newLastPage) || 1
+  
+  tableKey.value++
+  fetchData(targetPage)
 }
 
 const handleSearch = () => {
@@ -250,6 +326,157 @@ onMounted(() => {
   font-size: 18px;
   font-weight: 600;
   color: var(--text-primary);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pagination-controls label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* Custom Dropdown */
+.custom-select {
+  position: relative;
+  min-width: 80px;
+}
+
+.select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+}
+
+.select-trigger:hover {
+  border-color: var(--text-secondary);
+  background: var(--bg-primary);
+}
+
+.select-trigger:focus {
+  outline: none;
+  border-color: #0071e3;
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+}
+
+.custom-select.is-open .select-trigger {
+  border-color: #0071e3;
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+}
+
+.select-value {
+  font-weight: 600;
+}
+
+.select-arrow {
+  color: var(--text-secondary);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.custom-select.is-open .select-arrow {
+  transform: rotate(180deg);
+  color: #0071e3;
+}
+
+.select-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  z-index: 100;
+}
+
+.select-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.select-option:hover {
+  background: var(--bg-primary);
+}
+
+.select-option.is-selected {
+  color: #0071e3;
+  background: rgba(0, 113, 227, 0.08);
+}
+
+.select-option.is-selected:hover {
+  background: rgba(0, 113, 227, 0.12);
+}
+
+.select-option svg {
+  color: #0071e3;
+}
+
+/* Dropdown Animation */
+.dropdown-enter-active {
+  animation: dropdownIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dropdown-leave-active {
+  animation: dropdownOut 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes dropdownIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dropdownOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
 }
 
 .search-container {
@@ -520,6 +747,16 @@ tbody tr:hover {
     font-size: 16px;
   }
 
+  .header-right {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .pagination-controls {
+    justify-content: center;
+    width: 100%;
+  }
+
   .search-container {
     min-width: unset;
     width: 100%;
@@ -563,6 +800,24 @@ tbody tr:hover {
 
   .table-header h2 {
     font-size: 15px;
+  }
+
+  .pagination-controls label {
+    font-size: 13px;
+  }
+
+  .select-trigger {
+    padding: 7px 10px;
+    font-size: 13px;
+  }
+
+  .custom-select {
+    min-width: 70px;
+  }
+
+  .select-option {
+    padding: 8px 12px;
+    font-size: 13px;
   }
 
   .search-input {
