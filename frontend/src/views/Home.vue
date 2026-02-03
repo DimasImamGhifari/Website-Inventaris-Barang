@@ -17,6 +17,29 @@
       </div>
     </div>
 
+    <!-- Donut Chart Kondisi -->
+    <div class="chart-section">
+      <h3>Kondisi Barang</h3>
+      <div class="chart-content">
+        <div class="donut-wrapper">
+          <div class="donut" :style="donutStyle">
+            <div class="donut-hole">
+              <span class="donut-total">{{ totalAset }}</span>
+              <span class="donut-total-label">Total</span>
+            </div>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item" v-for="(value, key) in kondisiData" :key="key">
+            <span class="legend-dot" :style="{ background: kondisiColors[key] }"></span>
+            <span class="legend-label">{{ key }}</span>
+            <span class="legend-value">{{ value }}</span>
+            <span class="legend-percent">({{ getPercentage(value) }}%)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="data-section">
       <div class="section-header">
         <h3>Data Inventaris Barang</h3>
@@ -153,12 +176,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import api from '../api'
 import * as XLSX from 'xlsx'
 
 const user = ref(null)
 const totalAset = ref(0)
+const kondisiData = ref({ 'Baik': 0, 'Rusak Ringan': 0, 'Rusak Berat': 0 })
 const barangList = ref([])
 const allBarangList = ref([]) // For Excel download
 const searchQuery = ref('')
@@ -197,10 +221,44 @@ const kondisiClass = (kondisi) => {
   return ''
 }
 
+const kondisiColors = {
+  'Baik': '#34c759',
+  'Rusak Ringan': '#ff9500',
+  'Rusak Berat': '#ff3b30'
+}
+
+const donutStyle = computed(() => {
+  const total = totalAset.value
+  const baik = kondisiData.value['Baik']
+  const ringan = kondisiData.value['Rusak Ringan']
+  const berat = kondisiData.value['Rusak Berat']
+
+  if (!total || (baik === 0 && ringan === 0 && berat === 0)) {
+    return { background: 'conic-gradient(#e0e0e0 0% 100%)' }
+  }
+
+  const pBaik = (baik / total) * 100
+  const pRingan = (ringan / total) * 100
+
+  return {
+    background: `conic-gradient(
+      ${kondisiColors['Baik']} 0% ${pBaik}%,
+      ${kondisiColors['Rusak Ringan']} ${pBaik}% ${pBaik + pRingan}%,
+      ${kondisiColors['Rusak Berat']} ${pBaik + pRingan}% 100%
+    )`
+  }
+})
+
+const getPercentage = (value) => {
+  if (!totalAset.value) return 0
+  return ((value / totalAset.value) * 100).toFixed(1)
+}
+
 const fetchStatistik = async () => {
   try {
     const response = await api.get('/statistik')
     totalAset.value = response.data.data.total_aset
+    kondisiData.value = response.data.data.kondisi
   } catch (error) {
     console.error('Error fetching statistik:', error)
   }
@@ -355,6 +413,103 @@ onMounted(() => {
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1;
+}
+
+.chart-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.chart-section h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.chart-content {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.donut-wrapper {
+  flex-shrink: 0;
+}
+
+.donut {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-hole {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.donut-total {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.donut-total-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legend-label {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+  min-width: 100px;
+}
+
+.legend-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.legend-percent {
+  font-size: 13px;
+  color: var(--text-secondary);
 }
 
 .data-section {
@@ -703,6 +858,28 @@ tbody tr:hover {
     font-size: 24px;
   }
 
+  .chart-section {
+    padding: 20px;
+  }
+
+  .chart-content {
+    gap: 24px;
+  }
+
+  .donut {
+    width: 150px;
+    height: 150px;
+  }
+
+  .donut-hole {
+    width: 90px;
+    height: 90px;
+  }
+
+  .donut-total {
+    font-size: 22px;
+  }
+
   .data-section {
     padding: 16px;
   }
@@ -780,6 +957,39 @@ tbody tr:hover {
 
   .stat-value {
     font-size: 22px;
+  }
+
+  .chart-section {
+    padding: 16px;
+  }
+
+  .chart-section h3 {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+
+  .chart-content {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .donut {
+    width: 160px;
+    height: 160px;
+  }
+
+  .donut-hole {
+    width: 100px;
+    height: 100px;
+  }
+
+  .donut-total {
+    font-size: 24px;
+  }
+
+  .chart-legend {
+    width: 100%;
   }
 
   .data-section {

@@ -11,10 +11,18 @@ class BarangController extends Controller
 {
     public function statistik()
     {
+        $total = Barang::count();
+        $kondisi = [
+            'Baik' => Barang::where('kondisi', 'Baik')->count(),
+            'Rusak Ringan' => Barang::where('kondisi', 'Rusak Ringan')->count(),
+            'Rusak Berat' => Barang::where('kondisi', 'Rusak Berat')->count(),
+        ];
+
         return response()->json([
             'success' => true,
             'data' => [
-                'total_aset' => Barang::count(),
+                'total_aset' => $total,
+                'kondisi' => $kondisi,
             ]
         ]);
     }
