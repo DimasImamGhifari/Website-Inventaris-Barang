@@ -79,4 +79,49 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Riwayat Routes
     Route::get('/riwayat', [RiwayatController::class, 'index']);
+
+    // Akun Routes
+    Route::put('/akun', function (Request $request) {
+        $user = $request->user();
+
+        $rules = [];
+        if ($request->filled('username')) {
+            $rules['username'] = 'required|string|min:3';
+        }
+        if ($request->filled('password_baru')) {
+            $rules['password_lama'] = 'required|string';
+            $rules['password_baru'] = 'required|string|min:6';
+        }
+
+        $request->validate($rules);
+
+        // Update username
+        if ($request->filled('username') && $request->username !== $user->email) {
+            $user->email = $request->username;
+            $user->name = $request->username;
+        }
+
+        // Update password
+        if ($request->filled('password_baru')) {
+            if (!Hash::check($request->password_lama, $user->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Password lama salah'
+                ], 422);
+            }
+            $user->password = Hash::make($request->password_baru);
+        }
+
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Akun berhasil diperbarui',
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email
+            ]
+        ]);
+    });
 });

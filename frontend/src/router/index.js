@@ -8,6 +8,7 @@ import UpdateForm from '../views/UpdateForm.vue'
 import HapusData from '../views/HapusData.vue'
 import Riwayat from '../views/Riwayat.vue'
 import GenerateLabel from '../views/GenerateLabel.vue'
+import Akun from '../views/Akun.vue'
 
 const routes = [
   {
@@ -58,6 +59,11 @@ const routes = [
         path: 'generate-label',
         name: 'GenerateLabel',
         component: GenerateLabel
+      },
+      {
+        path: 'akun',
+        name: 'Akun',
+        component: Akun
       }
     ]
   }

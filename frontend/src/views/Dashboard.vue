@@ -47,6 +47,13 @@
         </router-link>
       </nav>
       <div class="sidebar-footer">
+        <router-link to="/dashboard/akun" class="nav-item footer-nav" active-class="active" @click="closeSidebar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>Akun</span>
+        </router-link>
         <div class="dark-mode-toggle" @click="toggleDarkMode">
           <div class="toggle-track" :class="{ active: isDarkMode }">
             <div class="toggle-thumb">
@@ -237,6 +244,13 @@ const cancelLogout = () => {
 .sidebar-footer {
   padding: 16px 24px;
   border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.footer-nav {
+  margin-bottom: 8px;
 }
 
 .dark-mode-toggle {
