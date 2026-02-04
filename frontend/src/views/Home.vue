@@ -68,25 +68,63 @@
       </div>
     </div>
 
-    <!-- Donut Chart Kondisi -->
-    <div class="chart-section">
-      <h3>Kondisi Barang</h3>
-      <div class="chart-content">
-        <div class="donut-wrapper">
-          <div class="donut" :style="{ '--donut-bg': donutBg, '--donut-progress': donutProgress + '%' }">
-            <div class="donut-hole">
-              <span class="donut-total">{{ displayTotal }}</span>
-              <span class="donut-total-label">Total</span>
+    <!-- Chart & Activity Row -->
+    <div class="chart-activity-row">
+      <!-- Donut Chart Kondisi -->
+      <div class="chart-section">
+        <h3>Kondisi Barang</h3>
+        <div class="chart-content">
+          <div class="donut-wrapper">
+            <div class="donut" :style="{ '--donut-bg': donutBg, '--donut-progress': donutProgress + '%' }">
+              <div class="donut-hole">
+                <span class="donut-total">{{ displayTotal }}</span>
+                <span class="donut-total-label">Total</span>
+              </div>
+            </div>
+          </div>
+          <div class="chart-legend">
+            <div class="legend-item" v-for="(value, key) in kondisiData" :key="key">
+              <span class="legend-dot" :style="{ background: kondisiColors[key] }"></span>
+              <span class="legend-label">{{ key }}</span>
+              <span class="legend-value">{{ value }}</span>
+              <span class="legend-percent">({{ getPercentage(value) }}%)</span>
             </div>
           </div>
         </div>
-        <div class="chart-legend">
-          <div class="legend-item" v-for="(value, key) in kondisiData" :key="key">
-            <span class="legend-dot" :style="{ background: kondisiColors[key] }"></span>
-            <span class="legend-label">{{ key }}</span>
-            <span class="legend-value">{{ value }}</span>
-            <span class="legend-percent">({{ getPercentage(value) }}%)</span>
+      </div>
+
+      <!-- Aktivitas Terbaru -->
+      <div class="activity-section">
+        <h3>Aktivitas Terbaru</h3>
+        <div class="activity-list" v-if="recentActivity.length > 0">
+          <div class="activity-item" v-for="item in recentActivity" :key="item.id">
+            <div class="activity-icon" :class="getActivityIconClass(item.perubahan)">
+              <svg v-if="item.perubahan.includes('Tambah')" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <svg v-else-if="item.perubahan.includes('Edit')" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+              <svg v-else xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </div>
+            <div class="activity-info">
+              <span class="activity-name">{{ item.nama_aset }}</span>
+              <span class="activity-detail">{{ item.perubahan }} &middot; {{ formatTimeAgo(item.created_at) }}</span>
+            </div>
+            <span class="activity-badge" :class="getActivityBadgeClass(item.perubahan)">{{ item.perubahan }}</span>
           </div>
+        </div>
+        <div class="activity-empty" v-else>
+          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <p>Belum ada aktivitas</p>
         </div>
       </div>
     </div>
@@ -240,6 +278,7 @@ const displayTotalUnit = ref(0)
 const displayTotalAktivitas = ref(0)
 const displayKondisiBaik = ref(0)
 const kondisiData = ref({ 'Baik': 0, 'Rusak Ringan': 0, 'Rusak Berat': 0 })
+const recentActivity = ref([])
 const barangList = ref([])
 const allBarangList = ref([]) // For Excel download
 const searchQuery = ref('')
@@ -332,6 +371,33 @@ const getPercentage = (value) => {
   return ((value / totalAset.value) * 100).toFixed(1)
 }
 
+const getActivityIconClass = (perubahan) => {
+  if (perubahan.includes('Tambah')) return 'activity-icon-add'
+  if (perubahan.includes('Edit')) return 'activity-icon-edit'
+  return 'activity-icon-delete'
+}
+
+const getActivityBadgeClass = (perubahan) => {
+  if (perubahan.includes('Tambah')) return 'badge-add'
+  if (perubahan.includes('Edit')) return 'badge-edit'
+  return 'badge-delete'
+}
+
+const formatTimeAgo = (datetime) => {
+  if (!datetime) return ''
+  const now = new Date()
+  const date = new Date(datetime)
+  const diff = Math.floor((now - date) / 1000)
+  if (diff < 60) return 'Baru saja'
+  if (diff < 3600) return `${Math.floor(diff / 60)} menit lalu`
+  if (diff < 86400) return `${Math.floor(diff / 3600)} jam lalu`
+  if (diff < 604800) return `${Math.floor(diff / 86400)} hari lalu`
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${d}/${m}/${y}`
+}
+
 const fetchStatistik = async () => {
   try {
     const response = await api.get('/statistik')
@@ -339,6 +405,7 @@ const fetchStatistik = async () => {
     totalUnit.value = response.data.data.total_unit || 0
     totalAktivitas.value = response.data.data.total_aktivitas || 0
     kondisiData.value = response.data.data.kondisi
+    recentActivity.value = response.data.data.recent_activity || []
     animateDonut()
   } catch (error) {
     console.error('Error fetching statistik:', error)
@@ -539,12 +606,20 @@ onMounted(() => {
   font-weight: 500;
 }
 
+.chart-activity-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
 .chart-section {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 24px;
-  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
 }
 
 .chart-section h3 {
@@ -557,7 +632,9 @@ onMounted(() => {
 .chart-content {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 40px;
+  flex: 1;
 }
 
 .donut-wrapper {
@@ -565,8 +642,8 @@ onMounted(() => {
 }
 
 .donut {
-  width: 180px;
-  height: 180px;
+  width: 220px;
+  height: 220px;
   border-radius: 50%;
   position: relative;
   display: flex;
@@ -585,8 +662,8 @@ onMounted(() => {
 }
 
 .donut-hole {
-  width: 110px;
-  height: 110px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   background: var(--bg-card);
   display: flex;
@@ -599,7 +676,7 @@ onMounted(() => {
 }
 
 .donut-total {
-  font-size: 28px;
+  font-size: 34px;
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1;
@@ -646,6 +723,133 @@ onMounted(() => {
 .legend-percent {
   font-size: 13px;
   color: var(--text-secondary);
+}
+
+/* Activity Section */
+.activity-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.activity-section h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.activity-icon-add {
+  background: #d4edda;
+  color: #155724;
+}
+
+.activity-icon-edit {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.activity-icon-delete {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.activity-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.activity-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.activity-detail {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.activity-badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.badge-add {
+  background: #d4edda;
+  color: #155724;
+}
+
+.badge-edit {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.badge-delete {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.activity-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 12px;
+  color: var(--text-secondary);
+  padding: 32px 0;
+}
+
+.activity-empty svg {
+  opacity: 0.4;
+}
+
+.activity-empty p {
+  font-size: 14px;
+  margin: 0;
 }
 
 .data-section {
@@ -1000,6 +1204,10 @@ tbody tr:hover {
     height: 60px;
   }
 
+  .chart-activity-row {
+    grid-template-columns: 1fr;
+  }
+
   .chart-section {
     padding: 20px;
   }
@@ -1110,7 +1318,8 @@ tbody tr:hover {
     padding: 16px;
   }
 
-  .chart-section h3 {
+  .chart-section h3,
+  .activity-section h3 {
     font-size: 16px;
     margin-bottom: 16px;
   }
@@ -1119,6 +1328,14 @@ tbody tr:hover {
     flex-direction: column;
     align-items: center;
     gap: 20px;
+  }
+
+  .activity-section {
+    padding: 16px;
+  }
+
+  .activity-badge {
+    display: none;
   }
 
   .donut {

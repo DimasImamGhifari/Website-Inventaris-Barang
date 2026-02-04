@@ -20,6 +20,8 @@ class BarangController extends Controller
             'Rusak Berat' => Barang::where('kondisi', 'Rusak Berat')->count(),
         ];
 
+        $recentActivity = Riwayat::orderBy('created_at', 'desc')->take(5)->get();
+
         return response()->json([
             'success' => true,
             'data' => [
@@ -27,6 +29,7 @@ class BarangController extends Controller
                 'total_unit' => (int) $totalUnit,
                 'total_aktivitas' => $totalAktivitas,
                 'kondisi' => $kondisi,
+                'recent_activity' => $recentActivity,
             ]
         ]);
     }
