@@ -553,26 +553,26 @@ tbody tr:hover {
 
 .badge {
   display: inline-block;
-  padding: 4px 10px;
-  border-radius: 20px;
+  padding: 4px 8px;
+  border-radius: 4px;
   font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
 }
 
 .badge-success {
-  background: rgba(52, 199, 89, 0.1);
-  color: #34c759;
+  background: #d4edda;
+  color: #155724;
 }
 
 .badge-warning {
-  background: rgba(255, 149, 0, 0.1);
-  color: #ff9500;
+  background: #fff3cd;
+  color: #856404;
 }
 
 .badge-danger {
-  background: rgba(255, 59, 48, 0.1);
-  color: #ff3b30;
+  background: #f8d7da;
+  color: #721c24;
 }
 
 .empty-state {
