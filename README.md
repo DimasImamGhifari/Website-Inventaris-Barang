@@ -15,6 +15,8 @@ Aplikasi pengelolaan data inventaris barang untuk Dinas Komunikasi Informatika d
 - Donut chart kondisi barang dengan animasi fill
 - Aktivitas Terbaru (5 log terakhir di dashboard)
 - CRUD Data Barang
+- Upload gambar barang (drag & drop, max 2MB, format JPG/PNG/GIF/WebP)
+- Preview gambar barang di tabel dengan modal zoom
 - Import data dari file Excel (drag & drop)
 - Export data ke Excel
 - Bulk Delete (hapus banyak data sekaligus)
@@ -104,6 +106,7 @@ Akses aplikasi di `http://localhost:5173`
 | lokasi_penyimpanan | varchar | Lokasi |
 | penanggung_jawab | varchar | PIC |
 | tahun_perolehan | integer | Tahun perolehan |
+| gambar | varchar | Nama file gambar (nullable) |
 
 ## API Endpoints
 
