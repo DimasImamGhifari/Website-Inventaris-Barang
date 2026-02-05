@@ -204,6 +204,7 @@ onMounted(() => {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
+  align-items: stretch;
 }
 
 .card {
@@ -211,6 +212,8 @@ onMounted(() => {
   border-radius: 12px;
   border: 1px solid var(--border-color);
   padding: 28px;
+  display: flex;
+  flex-direction: column;
 }
 
 .card-icon {
@@ -247,6 +250,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  flex: 1;
 }
 
 .form-group {
@@ -311,6 +315,10 @@ onMounted(() => {
 
 .btn-eye:hover {
   color: var(--text-primary);
+}
+
+.form .btn {
+  margin-top: auto;
 }
 
 .btn {
