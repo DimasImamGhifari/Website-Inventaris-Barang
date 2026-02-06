@@ -218,7 +218,7 @@ php artisan test --filter=BarangTest
 
 ### Test Cases
 
-**White Box Testing (53 tests):**
+**White Box Testing (60 tests):**
 - CREATE Positive: 5 tests
 - CREATE Negative: 5 tests
 - READ Positive: 5 tests
@@ -230,6 +230,8 @@ php artisan test --filter=BarangTest
 - Akun Negative: 4 tests
 - Search: 6 tests
 - Bulk Delete: 4 tests
+- Generate Label: 3 tests
+- Image/Foto Barang: 4 tests
 
 **Black Box Testing - Boundary Value Analysis (10 tests):**
 - Jumlah: minimum valid, below minimum, negatif
@@ -237,7 +239,7 @@ php artisan test --filter=BarangTest
 - Kode aset: empty string
 - Nama aset: panjang minimum, panjang maksimum
 
-**Total: 63 tests, 179 assertions**
+**Total: 70 tests, 216 assertions**
 
 Lihat file `TEST_CASES.md` untuk dokumentasi lengkap test cases.
 
