@@ -48,9 +48,7 @@
           </svg>
         </div>
         <span class="stat-value">{{ displayTotalAktivitas }}</span>
-        <span class="stat-label">Total Aktivitas Perubahan.
-          .
-        </span>
+        <span class="stat-label">Total Aktivitas Perubahan</span>
       </div>
       <div class="stat-card stat-card-teal">
         <div class="stat-card-bg">

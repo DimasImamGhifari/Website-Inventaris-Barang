@@ -35,4 +35,15 @@ class RiwayatController extends Controller
             ]
         ]);
     }
+
+    public function destroyAll()
+    {
+        $deleted = Riwayat::count();
+        Riwayat::truncate();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Berhasil menghapus {$deleted} riwayat"
+        ]);
+    }
 }

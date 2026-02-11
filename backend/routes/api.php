@@ -79,6 +79,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Riwayat Routes
     Route::get('/riwayat', [RiwayatController::class, 'index']);
+    Route::delete('/riwayat', [RiwayatController::class, 'destroyAll']);
 
     // Akun Routes
     Route::put('/akun', function (Request $request) {

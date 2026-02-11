@@ -6,7 +6,20 @@
 
     <div class="card">
       <div class="table-header">
-        <h2>Log Aktivitas</h2>
+        <div class="header-left">
+          <h2>Log Aktivitas</h2>
+          <button 
+            class="btn-delete-all" 
+            @click="showDeleteConfirm = true"
+            :disabled="loading || riwayat.length === 0"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Hapus Semua Riwayat
+          </button>
+        </div>
         <div class="header-right">
           <div class="pagination-controls">
             <label>Tampilkan:</label>
@@ -151,6 +164,30 @@
         <span>{{ notification.message }}</span>
       </div>
     </Transition>
+
+    <!-- Delete Confirmation Modal -->
+    <Transition name="modal">
+      <div v-if="showDeleteConfirm" class="modal-overlay" @click.self="showDeleteConfirm = false">
+        <div class="modal-content">
+          <div class="modal-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <h3>Hapus Semua Riwayat?</h3>
+          <p>Tindakan ini akan menghapus seluruh riwayat perubahan data secara permanen dan tidak dapat dibatalkan.</p>
+          <div class="modal-actions">
+            <button class="btn-cancel" @click="showDeleteConfirm = false" :disabled="deleting">Batal</button>
+            <button class="btn-confirm-delete" @click="deleteAllRiwayat" :disabled="deleting">
+              <span v-if="deleting">Menghapus...</span>
+              <span v-else>Ya, Hapus Semua</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -163,6 +200,8 @@ const loading = ref(false)
 const tableKey = ref(0)
 const searchQuery = ref('')
 const searchTimeout = ref(null)
+const showDeleteConfirm = ref(false)
+const deleting = ref(false)
 
 const notification = ref({
   show: false,
@@ -287,6 +326,29 @@ const getBadgeClass = (perubahan) => {
   return ''
 }
 
+const deleteAllRiwayat = async () => {
+  deleting.value = true
+  try {
+    const response = await api.delete('/riwayat')
+    if (response.data.success) {
+      showNotification(response.data.message, 'success')
+      riwayat.value = []
+      pagination.value = {
+        current_page: 1,
+        last_page: 1,
+        per_page: selectedPerPage.value,
+        total: 0
+      }
+    }
+  } catch (error) {
+    console.error('Error deleting riwayat:', error)
+    showNotification('Gagal menghapus riwayat', 'error')
+  } finally {
+    deleting.value = false
+    showDeleteConfirm.value = false
+  }
+}
+
 onMounted(() => {
   fetchData()
 })
@@ -295,6 +357,177 @@ onMounted(() => {
 <style scoped>
 .page-container {
   padding: 24px 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-delete-all {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #ff3b30;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-delete-all:hover:not(:disabled) {
+  background: #e0332b;
+}
+
+.btn-delete-all:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-delete-all:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-icon {
+  margin-bottom: 16px;
+  color: #ff3b30;
+}
+
+.modal-content h3 {
+  margin: 0 0 12px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.modal-content p {
+  margin: 0 0 24px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.btn-cancel {
+  padding: 10px 24px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: var(--border-color);
+}
+
+.btn-confirm-delete {
+  padding: 10px 24px;
+  background: #ff3b30;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-confirm-delete:hover:not(:disabled) {
+  background: #e0332b;
+}
+
+.btn-confirm-delete:disabled,
+.btn-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Modal Animation */
+.modal-enter-active {
+  animation: modalIn 0.3s ease;
+}
+
+.modal-leave-active {
+  animation: modalOut 0.2s ease;
+}
+
+.modal-enter-active .modal-content {
+  animation: modalContentIn 0.3s ease;
+}
+
+.modal-leave-active .modal-content {
+  animation: modalContentOut 0.2s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes modalContentIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modalContentOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
 }
 
 .page-header {
@@ -750,6 +983,16 @@ tbody tr:hover {
     font-size: 16px;
   }
 
+  .header-left {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-delete-all {
+    width: 100%;
+    justify-content: center;
+  }
+
   .header-right {
     flex-direction: column;
     width: 100%;
@@ -803,6 +1046,28 @@ tbody tr:hover {
 
   .table-header h2 {
     font-size: 15px;
+  }
+
+  .btn-delete-all {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .modal-content {
+    padding: 24px;
+  }
+
+  .modal-content h3 {
+    font-size: 18px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .btn-cancel,
+  .btn-confirm-delete {
+    width: 100%;
   }
 
   .pagination-controls label {
