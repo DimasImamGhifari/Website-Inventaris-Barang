@@ -2,21 +2,22 @@
   <div class="page-wrapper">
     <!-- Statistik -->
     <div class="stats-section">
-      <div class="stat-card stat-card-blue">
+      <div class="stat-card stat-card-blue stat-card-clickable" @click="openManualBook">
         <div class="stat-card-bg">
           <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
           </svg>
         </div>
         <div class="stat-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
           </svg>
         </div>
-        <span class="stat-value">{{ displayTotal }}</span>
-        <span class="stat-label">Total Aset</span>
+        <span class="stat-value" style="font-size: 18px; margin-top: 8px;">📖</span>
+        <span class="stat-label">Buka Manual Book</span>
+        <small class="stat-sublabel">Panduan Penggunaan Sistem</small>
       </div>
       <div class="stat-card stat-card-green">
         <div class="stat-card-bg">
@@ -432,6 +433,11 @@ const closeImageModal = () => {
   imageModal.value = { show: false, item: null }
 }
 
+const openManualBook = () => {
+  const pdfUrl = '/ManualBook.pdf'
+  window.open(pdfUrl, '_blank')
+}
+
 const pagination = ref({
   current_page: 1,
   last_page: 1,
@@ -816,6 +822,28 @@ onMounted(() => {
   color: rgba(255, 255, 255, 0.85);
   font-weight: 500;
   text-align: center;
+}
+
+.stat-sublabel {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 400;
+  text-align: center;
+  margin-top: 4px;
+}
+
+.stat-card-clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
+}
+
+.stat-card-clickable:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+}
+
+.stat-card-clickable:active {
+  transform: translateY(-4px) scale(0.98);
 }
 
 .chart-activity-row {
