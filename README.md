@@ -11,7 +11,8 @@ Aplikasi pengelolaan data inventaris barang untuk Dinas Komunikasi Informatika d
 ## Fitur
 
 - Login & Autentikasi (Laravel Sanctum)
-- Dashboard Statistik (Total Aset, Total Unit, Total Aktivitas, Kondisi Baik)
+- Dashboard Statistik (Manual Book, Total Unit, Total Aktivitas, Kondisi Baik)
+- Tombol Buka Manual Book (PDF panduan penggunaan sistem)
 - Donut chart kondisi barang dengan animasi fill clockwise
 - Animasi counting statistik 
 - Aktivitas Terbaru (5 log terakhir di dashboard)
@@ -196,7 +197,8 @@ Sistem mencatat semua perubahan data dengan detail lengkap:
 
 **Stat Cards:**
 - Animasi counting dari 0 ke nilai akhir
-- Gradient berwarna: biru (Total Aset), hijau (Total Unit), oranye (Total Aktivitas), teal (Kondisi Baik)
+- Gradient berwarna: biru (Buka Manual Book), hijau (Total Unit), oranye (Total Aktivitas), teal (Kondisi Baik)
+- Card biru berfungsi sebagai tombol untuk membuka PDF Manual Book di tab baru
 
 **Donut Chart:**
 - Animasi fill melingkar (clockwise)
