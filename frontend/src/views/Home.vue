@@ -815,6 +815,7 @@ onMounted(() => {
   font-size: 13px;
   color: rgba(255, 255, 255, 0.85);
   font-weight: 500;
+  text-align: center;
 }
 
 .chart-activity-row {
